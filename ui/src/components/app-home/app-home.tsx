@@ -5,12 +5,15 @@ import { getFunctions, httpsCallable } from "firebase/functions";
 @Component({
   tag: 'app-home',
   styleUrl: 'app-home.scss',
+  // removed the shadow dom
   shadow: false
 })
+
 export class AppHome {
   wordTypes: Array<string> = ['noun', 'verb', 'adjective', 'adverb', 'pronoun', 'preposition', 'conjunction', 'determiner', 'exclamation'];
   @State() wordList: any = [];
 
+  // API KEYS
   firebaseConfig = {
       apiKey: 'AIzaSyCbr67VqdY8PDlXvnEk-KzOUx5FtFjLxEc',
       authDomain: 'simple-word-builder.firebaseapp.com',
@@ -19,12 +22,14 @@ export class AppHome {
       messagingSenderId: '1024242730155',
       appId: '1:1024242730155:web:b3aed6fd78f3150bbca3ee'
   };
+
+  // lifecycle functions
   componentDidLoad(){
     this.getWordList("noun");
   }
 
+  // api call to retreive the words
   getWordList(wordType: string) {
-
     const app = firebase.initializeApp(this.firebaseConfig);
     const functions = getFunctions(app);
     const getSecificWordList = httpsCallable(functions, 'getWordTypeList');
@@ -38,6 +43,7 @@ export class AppHome {
     })
   }
 
+  // api call to publish to the backend
   uploadSentence(){
     const app = firebase.initializeApp(this.firebaseConfig);
     const functions = getFunctions(app);
@@ -50,10 +56,12 @@ export class AppHome {
     })
   }
 
+  // append() adds a single word to the textarea
   append(word: string){
     window.document.getElementById('textarea').textContent += " "+word;
   }
 
+  // html template
   render() {
     return (
       <div class="app-home">
