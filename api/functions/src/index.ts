@@ -1,52 +1,35 @@
 import * as functions from "firebase-functions";
 import { initializeApp } from 'firebase/app';
-import { collection, DocumentData, getDocs, getFirestore, query } from "firebase/firestore";
-const cors = require('cors');
+import { addDoc, collection, DocumentData, getDocs, getFirestore, query } from "firebase/firestore";
 
+// API KEYS
 const firebaseConfig = {
-    apiKey: 'AIzaSyBTe3hl2t7RJBUrddRMqRedTWtKlyO4qYA',
-    authDomain: 'umuhle-b236e.firebaseapp.com',
-    projectId: 'umuhle-b236e',
-    storageBucket: 'umuhle-b236e.appspot.com',
-    messagingSenderId: '372747063656',
-    appId: '1:372747063656:web:7aff418ed3be73d1f046dd'
+    apiKey: 'AIzaSyCbr67VqdY8PDlXvnEk-KzOUx5FtFjLxEc',
+    authDomain: 'simple-word-builder.firebaseapp.com',
+    projectId: 'simple-word-builder',
+    storageBucket: 'simple-word-builder.appspot.com',
+    messagingSenderId: '1024242730155',
+    appId: '1:1024242730155:web:b3aed6fd78f3150bbca3ee'
 };
 
-async function getWordTypeList(wordType:string, response: functions.Response<any>){
+// getWordTypeList() returns an array of words of a certain type
+export const getWordTypeList = functions.https.onCall(async (data,context)=>{
+
     const firestoreObject = getFirestore(initializeApp(firebaseConfig));
-    const collectionFromDatabase = collection(firestoreObject, wordType);
+    const collectionFromDatabase = collection(firestoreObject, data);
     const queryToGetWordTypes = query(collectionFromDatabase);
     const querySnapshot = await getDocs(queryToGetWordTypes);
     const listOfWordsWithMatchingType: DocumentData[] = [];
-    // response.send(querySnapshot);
+
     querySnapshot.forEach((doc) => {  
         listOfWordsWithMatchingType.push(doc.data());
     });
-    response.send(listOfWordsWithMatchingType);
-}
-
-// // // Start writing Firebase Functions
-// // // https://firebase.google.com/docs/functions/typescript
-
-export const noun = functions.https.onRequest(async (request, response) => {
-    cors(request, response, () => {
-        functions.logger.info("noun!", {structuredData: true});
-        // response.send("noun")
-        getWordTypeList('noun',response);
-    });
+    return listOfWordsWithMatchingType;
 });
 
-export const verb = functions.https.onRequest((request, response) => {
-    cors(request, response, () => {
-        functions.logger.info("verb!", {structuredData: true});
-        getWordTypeList('verb',response);
-    });
-});
-
-export const sentence = functions.https.onRequest((request, response) => {
-    cors(request, response, () => {
-        functions.logger.info("sentence", {structuredData: true});
-        response.send("sentence");
-        return "sentence";
+// sentence() writes sentences to the database
+export const sentence = functions.https.onCall((data,context)=>{
+    addDoc(collection(getFirestore(initializeApp(firebaseConfig)), "sentence"), {
+        sentence: data
     });
 });
